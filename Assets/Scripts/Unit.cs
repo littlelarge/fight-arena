@@ -146,9 +146,6 @@ public class Unit : MonoBehaviour
 
             yield return null;
         }
-
-        if (_target != null)
-            Chase();
     }
 
     private IEnumerator TakeDamageEffect_Coroutine()
