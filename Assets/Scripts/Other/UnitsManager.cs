@@ -9,11 +9,12 @@ public class UnitsManager : Singleton<UnitsManager>
     #endregion
 
     #region UnityMethods
-    public override void Awake()
+    public void Update()
     {
-        base.Awake();
-
-        Units = FindObjectsOfType<Unit>().ToList();
+        if (SceneSettings.Instance.UnitsSpawned && Units.Count == 0)
+        {
+            Units = FindObjectsOfType<Unit>().ToList();
+        }
     }
     #endregion
 }

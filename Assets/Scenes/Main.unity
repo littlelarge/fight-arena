@@ -445,8 +445,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 104.9
-  m_fontSizeBase: 104.9
+  m_fontSize: 63.1
+  m_fontSizeBase: 63.1
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -913,8 +913,12 @@ MonoBehaviour:
   Ground: {fileID: 601924303}
   SpawnRoot: {fileID: 699171769}
   UnitPrefab: {fileID: 5282052300072096818, guid: f2e6527b2562646b396cb297c3f91146, type: 3}
-  GroundSize: 1
-  UnitsCount: 2
+  GroundSize: 6
+  UnitsCount: 30
+  RandomOffset: 20
+  MaxHealth: 20
+  MaxDamage: 10
+  UnitsSpawned: 0
 --- !u!4 &662968531 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5282052300072096782, guid: f2e6527b2562646b396cb297c3f91146, type: 3}
@@ -1816,7 +1820,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1800469917}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
@@ -1827,7 +1831,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: -0.7778839}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1800469922

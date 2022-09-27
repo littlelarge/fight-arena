@@ -34,9 +34,9 @@ public class Unit : MonoBehaviour
     private bool _iWasChosen;
     private Material _defaultMaterial;
 
-    public int Health => _health;
+    public int Health { get { return _health; } set { _health = value; } }
     public int MaxHealth => _maxHealth;
-    public int Damage => _damage;
+    public int Damage { get { return _damage; }  set { _damage = value; } }
     public Unit Target => _target;
     public StatesPreset State => _state;
     public UnitMovement UnitMovement => _unitMovement;
