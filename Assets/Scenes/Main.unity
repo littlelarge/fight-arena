@@ -914,10 +914,10 @@ MonoBehaviour:
   SpawnRoot: {fileID: 699171769}
   UnitPrefab: {fileID: 5282052300072096818, guid: f2e6527b2562646b396cb297c3f91146, type: 3}
   GroundSize: 6
-  UnitsCount: 30
+  UnitsCount: 100
   RandomOffset: 20
   MaxHealth: 20
-  MaxDamage: 10
+  MaxDamage: 3
   UnitsSpawned: 0
 --- !u!4 &662968531 stripped
 Transform:

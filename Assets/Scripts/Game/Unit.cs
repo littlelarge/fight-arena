@@ -97,6 +97,9 @@ public class Unit : MonoBehaviour
             Die();
             unit.OnEnemyDied.Invoke();
         }
+
+        if (_target != unit)
+            _target = unit;
     }
 
     public void Die()
@@ -177,7 +180,7 @@ public class Unit : MonoBehaviour
                     else
                         _unitMovement.Freeze();
                 }
-                else if (_target.Target == this)
+                else
                     Attack();
             }
             else if (UnitsManager.Instance.Units.Count > 1)
