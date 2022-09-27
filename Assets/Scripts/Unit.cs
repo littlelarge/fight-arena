@@ -21,6 +21,7 @@ public class Unit : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI _healthUI;
+    [SerializeField] private GameObject _attacking;
 
     #region Events
     private UnityEvent OnEnemyDied = new UnityEvent();
@@ -160,17 +161,26 @@ public class Unit : MonoBehaviour
     {
         _state = StatesPreset.Chasing;
 
-        while (_target)
+        while (true)
         {
-            float distance = Vector3.Distance(transform.position, _target.transform.position);
-
-            if (distance > 2f)
+            if (Target)
             {
-                if (_target.State != StatesPreset.Attacking)
-                    _unitMovement.Move(_target);
+                float distance = Vector3.Distance(transform.position, _target.transform.position);
+
+                if (distance > 2f)
+                {
+                    if (_target.State != StatesPreset.Attacking)
+                        _unitMovement.Move(_target);
+                }
+                else
+                    Attack();
             }
-            else
-                Attack();
+            else if (UnitsManager.Instance.Units.Count > 1)
+            {
+                Chase();
+
+                yield break;
+            }
             
             yield return null;
         }
@@ -186,6 +196,8 @@ public class Unit : MonoBehaviour
 
             _target.TakeDamage(_damage, this);
 
+            _attacking.SetActive(true);
+
             //print($"transform name: {transform.name} \n current health: {_health}");
 
             _reloading = true;
@@ -193,6 +205,8 @@ public class Unit : MonoBehaviour
             yield return new WaitForSeconds(_reloadingTime);
 
             _reloading = false;
+
+            _attacking.SetActive(false);
 
             _unitMovement.Unfreeze();
 
