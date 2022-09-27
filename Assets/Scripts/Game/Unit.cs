@@ -25,7 +25,7 @@ public class Unit : MonoBehaviour
 
     #region Events
     private UnityEvent OnEnemyDied = new UnityEvent();
-    private UnityEvent<Unit> OnIWasChosen = new UnityEvent<Unit>();
+    //private UnityEvent<Unit> OnIWasChosen = new UnityEvent<Unit>();
     #endregion
 
     private Unit _target;
@@ -49,7 +49,7 @@ public class Unit : MonoBehaviour
         OnEnemyDied.AddListener(CheckOfWin);
         OnEnemyDied.AddListener(SetDestinitionToSelf);
 
-        OnIWasChosen.AddListener(SetTarget);
+        //OnIWasChosen.AddListener(SetTarget);
 
         UpdateHealth();
 
@@ -109,8 +109,8 @@ public class Unit : MonoBehaviour
     {
         _target = FindNearestTarget();
 
-        if (_target)
-            _target.OnIWasChosen.Invoke(this);
+        //if (_target)
+        //    _target.OnIWasChosen.Invoke(this);
 
         //if (transform.name == "Unit" && _target == null)
         //print($"transform name: {transform.name} \n target name: {_target.name}");
@@ -153,10 +153,10 @@ public class Unit : MonoBehaviour
         _unitMovement.SetDestinitionToSelf();
     }
 
-    private void SetTarget(Unit unit)
-    {
-        _target = unit;
-    }
+    //private void SetTarget(Unit unit)
+    //{
+    //    _target = unit;
+    //}
     #endregion
 
     #region Coroutines
@@ -174,6 +174,8 @@ public class Unit : MonoBehaviour
                 {
                     if (_target.State != StatesPreset.Attacking)
                         _unitMovement.Move(_target);
+                    else
+                        _unitMovement.Freeze();
                 }
                 else if (_target.Target == this)
                     Attack();
