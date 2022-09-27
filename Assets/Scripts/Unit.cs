@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Events;
 
 public class Unit : MonoBehaviour
 {
@@ -20,8 +22,10 @@ public class Unit : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI _healthUI;
 
+    private UnityEvent OnEnemyDied = new UnityEvent();
+
     private Unit _target;
-    private StatesPreset _state = StatesPreset.Alive;
+    private StatesPreset _state;
     private bool _reloading;
 
     public int Health => _health;
@@ -34,6 +38,11 @@ public class Unit : MonoBehaviour
     #region UnityMethods
     private void Start()
     {
+        OnEnemyDied.AddListener(Chase);
+        OnEnemyDied.AddListener(CheckOfWin);
+
+        UpdateHealth();
+
         Chase();
     }
 
@@ -42,12 +51,19 @@ public class Unit : MonoBehaviour
         if (_target)
             Gizmos.DrawLine(transform.position, _target.transform.position);
     }
+
+    private void Update()
+    {
+        if (_target)
+            transform.LookAt(_target.transform);
+    }
     #endregion
 
     #region Methods
     public void Chase()
     {
         UpdateTarget();
+        _unitMovement.Unfreeze();
         StartCoroutine(Chase_Coroutine());
     }
 
@@ -56,21 +72,23 @@ public class Unit : MonoBehaviour
         StartCoroutine(Attack_Coroutine());
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Unit unit)
     {
         _health -= damage;
 
-        _healthUI.text = _health.ToString();
+        UpdateHealth();
 
         TakeDamageEffect();
 
         if (_health <= 0)
+        {
             Die();
+            unit.OnEnemyDied.Invoke();
+        }
     }
 
     public void Die()
     {
-        _state = StatesPreset.Die;
         UnitsManager.Instance.Units.Remove(this);
         Destroy(gameObject);
     }
@@ -79,6 +97,7 @@ public class Unit : MonoBehaviour
     {
         _target = FindNearestTarget();
 
+        //if (transform.name == "Unit" && _target == null)
         //print($"transform name: {transform.name} \n target name: {_target.name}");
     }
 
@@ -108,33 +127,42 @@ public class Unit : MonoBehaviour
     {
         StartCoroutine(TakeDamageEffect_Coroutine());
     }
+
+    private void UpdateHealth()
+    {
+        _healthUI.text = _health.ToString();
+    }
     #endregion
 
     #region Coroutines
     private IEnumerator Chase_Coroutine()
     {
-        while (_target.State != StatesPreset.Die)
+        while (_target)
         {
             _state = StatesPreset.Chasing;
 
-            if (Vector3.Distance(transform.position, _target.transform.position) > 1.3f)
+            float distance = Vector3.Distance(transform.position, _target.transform.position);
+
+            if (distance > 2f)
                 _unitMovement.Move(_target);
             else
                 Attack();
-
+            
             yield return null;
         }
     }
 
     private IEnumerator Attack_Coroutine()
     {
-        while (_target.State != StatesPreset.Die && !_reloading)
+        if (!_reloading)
         {
             _state = StatesPreset.Attacking;
 
-            _target.TakeDamage(_damage);
+            _unitMovement.Freeze();
 
-            print($"transform name: {transform.name} \n current health: {_health}");
+            _target.TakeDamage(_damage, this);
+
+            //print($"transform name: {transform.name} \n current health: {_health}");
 
             _reloading = true;
 
@@ -142,7 +170,7 @@ public class Unit : MonoBehaviour
 
             _reloading = false;
 
-            UpdateTarget();
+            _unitMovement.Unfreeze();
 
             yield return null;
         }
@@ -161,15 +189,24 @@ public class Unit : MonoBehaviour
         renderer.material = defaultMaterial;
 
     }
+
+    private void CheckOfWin()
+    {
+        if (UnitsManager.Instance.Units.Count == 1)
+            Win();
+    }
+
+    private void Win()
+    {
+        WindowsManager.Instance.Windows.WinnerWindow.Show();
+    }
     #endregion
 
     #region Enums
     public enum StatesPreset
     {
         Chasing,
-        Attacking,
-        Alive,
-        Die
+        Attacking
     }
     #endregion
 }

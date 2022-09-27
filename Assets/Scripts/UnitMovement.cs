@@ -14,5 +14,16 @@ public class UnitMovement : MonoBehaviour
     {
         _agent.SetDestination(target.transform.position);
     }
+
+    public void Freeze()
+    {
+        if (_agent.isOnNavMesh)
+            _agent.isStopped = true;
+    }
+
+    public void Unfreeze()
+    {
+        _agent.isStopped = false;
+    }
     #endregion
 }
