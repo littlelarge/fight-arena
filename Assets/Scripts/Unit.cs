@@ -22,17 +22,22 @@ public class Unit : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI _healthUI;
 
+    #region Events
     private UnityEvent OnEnemyDied = new UnityEvent();
+    private UnityEvent<Unit> OnIWasChosen = new UnityEvent<Unit>();
+    #endregion
 
     private Unit _target;
     private StatesPreset _state;
     private bool _reloading;
+    private bool _iWasChosen;
 
     public int Health => _health;
     public int MaxHealth => _maxHealth;
     public int Damage => _damage;
     public Unit Target => _target;
     public StatesPreset State => _state;
+    public UnitMovement UnitMovement => _unitMovement;
     #endregion
 
     #region UnityMethods
@@ -40,6 +45,9 @@ public class Unit : MonoBehaviour
     {
         OnEnemyDied.AddListener(Chase);
         OnEnemyDied.AddListener(CheckOfWin);
+        OnEnemyDied.AddListener(SetDestinitionToSelf);
+
+        OnIWasChosen.AddListener(SetTarget);
 
         UpdateHealth();
 
@@ -97,6 +105,9 @@ public class Unit : MonoBehaviour
     {
         _target = FindNearestTarget();
 
+        if (_target)
+            _target.OnIWasChosen.Invoke(this);
+
         //if (transform.name == "Unit" && _target == null)
         //print($"transform name: {transform.name} \n target name: {_target.name}");
     }
@@ -132,19 +143,32 @@ public class Unit : MonoBehaviour
     {
         _healthUI.text = _health.ToString();
     }
+
+    private void SetDestinitionToSelf()
+    {
+        _unitMovement.SetDestinitionToSelf();
+    }
+
+    private void SetTarget(Unit unit)
+    {
+        _target = unit;
+    }
     #endregion
 
     #region Coroutines
     private IEnumerator Chase_Coroutine()
     {
+        _state = StatesPreset.Chasing;
+
         while (_target)
         {
-            _state = StatesPreset.Chasing;
-
             float distance = Vector3.Distance(transform.position, _target.transform.position);
 
             if (distance > 2f)
-                _unitMovement.Move(_target);
+            {
+                if (_target.State != StatesPreset.Attacking)
+                    _unitMovement.Move(_target);
+            }
             else
                 Attack();
             
