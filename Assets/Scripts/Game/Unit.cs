@@ -32,6 +32,7 @@ public class Unit : MonoBehaviour
     private StatesPreset _state;
     private bool _reloading;
     private bool _iWasChosen;
+    private Material _defaultMaterial;
 
     public int Health => _health;
     public int MaxHealth => _maxHealth;
@@ -53,6 +54,8 @@ public class Unit : MonoBehaviour
         UpdateHealth();
 
         Chase();
+
+        _defaultMaterial = GetComponent<MeshRenderer>().material;
     }
 
     private void OnDrawGizmos()
@@ -172,7 +175,7 @@ public class Unit : MonoBehaviour
                     if (_target.State != StatesPreset.Attacking)
                         _unitMovement.Move(_target);
                 }
-                else
+                else if (_target.Target == this)
                     Attack();
             }
             else if (UnitsManager.Instance.Units.Count > 1)
@@ -218,14 +221,11 @@ public class Unit : MonoBehaviour
     {
         MeshRenderer renderer = transform.GetComponent<MeshRenderer>();
 
-        Material defaultMaterial = renderer.material;
-
         renderer.material = _takeDamageMaterial;
 
         yield return new WaitForSeconds(.2f);
 
-        renderer.material = defaultMaterial;
-
+        renderer.material = _defaultMaterial;
     }
 
     private void CheckOfWin()
